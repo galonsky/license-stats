@@ -1,8 +1,3 @@
-from pygithub3 import Github
-from pprint import pprint
+import repo
 
-gh = Github()
-
-repo = gh.repos.get(user='copitux', repo='python-github3')
-
-pprint(vars(repo))
+repo.processRepo('https://github.com/galonsky/license-stats')
