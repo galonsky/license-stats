@@ -16,6 +16,7 @@ def getLicenseURL(user, repo, filename):
 
 
 def getLicense(gitURL):
+    license = ''
     prog = re.compile(LICENSE_PATTERN, re.IGNORECASE)
     Repo.clone_from(gitURL, REPO_PATH)
     for filename in os.listdir(REPO_PATH):
@@ -23,8 +24,11 @@ def getLicense(gitURL):
         if not os.path.isdir(REPO_PATH + '/' + filename):
             match = prog.match(filename)
             if match and (len(match.group(0)) == length):
-                print filename
+                f = open(REPO_PATH + '/' + filename, 'r')
+                license = f.read()
+                break
     shutil.rmtree(REPO_PATH)
+    return license
 
 
 def processRepo(url):
@@ -35,4 +39,4 @@ def processRepo(url):
 
     info = gh.repos.get(user=user, repo=repoName)
     #pprint(vars(info))
-    getLicense(info._attrs['clone_url'])
+    print getLicense(info._attrs['clone_url'])
