@@ -1,6 +1,6 @@
 from pygithub3 import Github
 from pprint import pprint
-from git import Repo
+from git import *
 import urllib3
 import os
 import shutil
@@ -15,10 +15,22 @@ def getLicenseURL(user, repo, filename):
     return 'https://raw.github.com/%s/%s/master/%s' % (user, repo, filename)
 
 
-def getLicense(gitURL):
+def getCommitCount(repo):
+    commit = repo.commit('master')
+    return commit.count()
+
+
+def deleteRepo():
+    shutil.rmtree(REPO_PATH)
+
+
+def cloneRepo(gitURL):
+    return Repo.clone_from(gitURL, REPO_PATH)
+
+
+def getLicense():
     license = ''
     prog = re.compile(LICENSE_PATTERN, re.IGNORECASE)
-    Repo.clone_from(gitURL, REPO_PATH)
     for filename in os.listdir(REPO_PATH):
         length = len(filename)
         if not os.path.isdir(REPO_PATH + '/' + filename):
@@ -26,9 +38,7 @@ def getLicense(gitURL):
             if match and (len(match.group(0)) == length):
                 f = open(REPO_PATH + '/' + filename, 'r')
                 license = f.read()
-                break
-    shutil.rmtree(REPO_PATH)
-    return license
+                return license
 
 
 def processRepo(url):
@@ -39,4 +49,21 @@ def processRepo(url):
 
     info = gh.repos.get(user=user, repo=repoName)
     #pprint(vars(info))
-    print getLicense(info._attrs['clone_url'])
+    repo = cloneRepo(info._attrs['clone_url'])
+    
+    stats = {}
+    stats['license'] = getLicense()
+    stats['commits'] = getCommitCount(repo)
+    stats['created'] = info._attrs['created_at']
+    stats['name'] = info._attrs['name']
+    stats['forks'] = info._attrs['forks']
+    stats['url'] = info._attrs['html_url']
+    stats['git_url'] = info._attrs['git_url']
+    stats['watchers'] = info._attrs['watchers']
+    stats['updated'] = info._attrs['pushed_at']
+    stats['language'] = info._attrs['language']
+
+    pprint(stats)
+
+    deleteRepo()
+    #print getLicense(info._attrs['clone_url'])
