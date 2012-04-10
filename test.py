@@ -1,3 +1,3 @@
 import repo
 
-repo.processRepo('https://github.com/galonsky/license-stats')
+repo.processRepo('https://github.com/gitpython-developers/GitPython')
