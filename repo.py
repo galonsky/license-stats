@@ -36,6 +36,7 @@ def getLicense(path):
             if match:
                 f = open(path + '/' + filename, 'r')
                 license = f.read()
+                f.close()
                 return license
 
 
