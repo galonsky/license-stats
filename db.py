@@ -2,7 +2,7 @@ import pymysql
 import ConfigParser
 
 config = ConfigParser.ConfigParser()
-config.read('db.cfg')
+config.read('config.cfg')
 
 conn = pymysql.connect(
     host=config.get('db', 'host'), 
