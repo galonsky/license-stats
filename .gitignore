@@ -1,2 +1,3 @@
 *.py[co]
 *.cfg
+.DS_Store
