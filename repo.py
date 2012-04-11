@@ -54,14 +54,11 @@ def processRepo(info):
     print 'Processing repo: %s' % info.name
     print 'remaining requests: %s' % gh.remaining_requests
     # pprint(vars(info))
-    repo = cloneRepo(info.clone_url)
-
+    
     parts = info.html_url.split('/')
     user = parts[-2]
 
     stats = {}
-    stats['license'] = getLicense()
-    stats['commits'] = getCommitCount(repo)
     stats['created'] = info.created_at
     stats['name'] = info.name
     stats['forks'] = info.forks
@@ -72,7 +69,16 @@ def processRepo(info):
     stats['language'] = info.language
     stats['user'] = user
 
-    db.insertRecord(stats)
+    try:
+        repo = cloneRepo(info.clone_url)
+        stats['commits'] = getCommitCount(repo)
+        stats['license'] = getLicense()
+        db.insertRecord(stats)
+    except Exception as inst:
+        print 'Caught error: \n%s' % inst
+        db.insertError(stats['url'], inst)
 
-    deleteRepo()
+    if os.path.exists(REPO_PATH):
+        deleteRepo()
+  
     #print getLicense(info._attrs['clone_url'])
