@@ -51,7 +51,7 @@ def processRepoWithURL(url):
 
 def processRepo(info):
 
-    if not info.fork:
+    if info.fork:
         return False
 
     print 'Processing repo: %s' % info.name
