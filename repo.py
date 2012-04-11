@@ -51,9 +51,12 @@ def processRepoWithURL(url):
 
 def processRepo(info):
 
+    if not info.fork:
+        return False
+
     print 'Processing repo: %s' % info.name
     print 'remaining requests: %s' % gh.remaining_requests
-    # pprint(vars(info))
+    #pprint(vars(info))
     
     parts = info.html_url.split('/')
     user = parts[-2]
@@ -76,9 +79,11 @@ def processRepo(info):
         db.insertRecord(stats)
     except Exception as inst:
         print 'Caught error: \n%s' % inst
-        db.insertError(stats['url'], inst)
+        db.insertError(stats['url'], inst.__str__())
 
     if os.path.exists(REPO_PATH):
         deleteRepo()
+
+    return True
   
     #print getLicense(info._attrs['clone_url'])

@@ -29,3 +29,11 @@ def numRepos():
 
 def repoProcessed(repo):
     return r.sismember('repos', repo)
+
+
+def userProcessed(user):
+    return r.sismember('users_processed', user)
+
+
+def addProcessedUser(user):
+    return r.sadd('users_processed', user)
