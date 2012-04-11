@@ -38,4 +38,4 @@ def insertRecord(stats):
 
 def insertError(url, error):
     query = 'INSERT INTO repos (url, error) VALUES (%s, %s);'
-    cur.execute(query, url, str(error))
+    cur.execute(query, (url, error))
