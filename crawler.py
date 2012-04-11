@@ -15,6 +15,8 @@ def crawlUsers(until):
                     print 'Adding %s' % followed.login
                     redis_client.addUser(followed.login)
             num = redis_client.numUsers()
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             continue
 
@@ -29,5 +31,7 @@ def crawlRepos():
                 if not redis_client.repoProcessed(watched.name):
                     if repo.processRepo(watched):
                         redis_client.addRepo(watched.name)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             continue
