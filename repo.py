@@ -50,7 +50,7 @@ def processRepo(url):
     info = gh.repos.get(user=user, repo=repoName)
     #pprint(vars(info))
     repo = cloneRepo(info._attrs['clone_url'])
-    
+
     stats = {}
     stats['license'] = getLicense()
     stats['commits'] = getCommitCount(repo)
@@ -62,6 +62,7 @@ def processRepo(url):
     stats['watchers'] = info._attrs['watchers']
     stats['updated'] = info._attrs['pushed_at']
     stats['language'] = info._attrs['language']
+    stats['user'] = user
 
     pprint(stats)
 
