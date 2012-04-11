@@ -8,7 +8,6 @@ import re
 
 gh = Github()
 LICENSE_PATTERN = '.*(LICENSE|COPYING)(\.(txt|md))?'
-REPO_PATH = './current_repo'
 
 
 def getLicenseURL(user, repo, filename):
@@ -20,22 +19,22 @@ def getCommitCount(repo):
     return commit.count()
 
 
-def deleteRepo():
-    shutil.rmtree(REPO_PATH)
+def deleteRepo(path):
+    shutil.rmtree(path)
 
 
-def cloneRepo(gitURL):
-    return Repo.clone_from(gitURL, REPO_PATH)
+def cloneRepo(gitURL, dest):
+    return Repo.clone_from(gitURL, dest)
 
 
-def getLicense():
+def getLicense(path):
     license = ''
     prog = re.compile(LICENSE_PATTERN, re.IGNORECASE)
-    for filename in os.listdir(REPO_PATH):
-        if not os.path.isdir(REPO_PATH + '/' + filename):
+    for filename in os.listdir(path):
+        if not os.path.isdir(path + '/' + filename):
             match = prog.match(filename)
             if match:
-                f = open(REPO_PATH + '/' + filename, 'r')
+                f = open(path + '/' + filename, 'r')
                 license = f.read()
                 return license
 
@@ -72,17 +71,19 @@ def processRepo(info):
     stats['language'] = info.language
     stats['user'] = user
 
+    path = './current_repo/' + info.name
+
     try:
-        repo = cloneRepo(info.clone_url)
+        repo = cloneRepo(info.clone_url, path)
         stats['commits'] = getCommitCount(repo)
-        stats['license'] = getLicense()
+        stats['license'] = getLicense(path)
         db.insertRecord(stats)
     except Exception as inst:
         print 'Caught error: \n%s' % inst
         db.insertError(stats['url'], inst.__str__())
 
-    if os.path.exists(REPO_PATH):
-        deleteRepo()
+    if os.path.exists(path):
+        deleteRepo(path)
 
     return True
   
