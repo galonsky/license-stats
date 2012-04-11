@@ -1,7 +1,7 @@
 from pygithub3 import Github
 from pprint import pprint
 from git import *
-import urllib3
+import db
 import os
 import shutil
 import re
@@ -64,7 +64,7 @@ def processRepo(url):
     stats['language'] = info._attrs['language']
     stats['user'] = user
 
-    pprint(stats)
+    db.insertRecord(stats)
 
     deleteRepo()
     #print getLicense(info._attrs['clone_url'])
