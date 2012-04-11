@@ -19,13 +19,13 @@ def addRepo(repo):
     return r.sadd('repos', repo)
 
 
-def getRepo():
-    return r.spop('repos')
-
-
 def numUsers():
     return r.scard('users')
 
 
 def numRepos():
     return r.scard('repos')
+
+
+def repoProcessed(repo):
+    return r.sismember('repos', repo)
