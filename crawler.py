@@ -9,11 +9,14 @@ def crawlUsers(until):
     num = redis_client.numUsers()
     while num < until:
         seedUser = redis_client.getUser()
-        for followed in gh.users.followers.list_following(seedUser).iterator():
-            if not redis_client.userProcessed(followed.login):
-                print 'Adding %s' % followed.login
-                redis_client.addUser(followed.login)
-        num = redis_client.numUsers()
+        try:
+            for followed in gh.users.followers.list_following(seedUser).iterator():
+                if not redis_client.userProcessed(followed.login):
+                    print 'Adding %s' % followed.login
+                    redis_client.addUser(followed.login)
+            num = redis_client.numUsers()
+        except:
+            continue
 
 
 def crawlRepos():
@@ -21,7 +24,10 @@ def crawlRepos():
         seedUser = redis_client.getUser()
         redis_client.addProcessedUser(seedUser)
         print 'Seed user: %s' % seedUser
-        for watched in gh.repos.watchers.list_repos(seedUser).iterator():
-            if not redis_client.repoProcessed(watched.name):
-                if repo.processRepo(watched):
-                    redis_client.addRepo(watched.name)
+        try:
+            for watched in gh.repos.watchers.list_repos(seedUser).iterator():
+                if not redis_client.repoProcessed(watched.name):
+                    if repo.processRepo(watched):
+                        redis_client.addRepo(watched.name)
+        except:
+            continue
