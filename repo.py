@@ -5,6 +5,7 @@ import db
 import os
 import shutil
 import re
+import license
 
 gh = Github()
 LICENSE_PATTERN = '.*(LICENSE|COPYING)(\.(txt|md))?'
@@ -78,6 +79,9 @@ def processRepo(info):
         repo = cloneRepo(info.clone_url, path)
         stats['commits'] = getCommitCount(repo)
         stats['license'] = getLicense(path)
+        stats['license_type'] = None
+        if not stats['license'] == None:
+            stats['license_type'] = license.getLicenseType(stats['license'])
         db.insertRecord(stats)
     except Exception as inst:
         print 'Caught error: \n%s' % inst
