@@ -23,6 +23,8 @@ def crawlUsers(until):
 
 def crawlRepos():
     while gh.remaining_requests == '~' or int(gh.remaining_requests) > 0:
+        if redis_client.numUsers() < 100:
+            crawlUsers(10000)
         seedUser = redis_client.getUser()
         redis_client.addProcessedUser(seedUser)
         print 'Seed user: %s' % seedUser
