@@ -6,6 +6,7 @@ import os
 import shutil
 import re
 import license
+import sys
 
 gh = Github()
 LICENSE_PATTERN = '.*(LICENSE|COPYING)(\.(txt|md))?'
@@ -85,6 +86,9 @@ def processRepo(info):
         db.insertRecord(stats)
     except Exception as inst:
         print 'Caught error: \n%s' % inst
+        if inst.__str__() == '[Errno 24] Too many open files':
+            print inst
+            sys.exit()
         db.insertError(stats['url'], inst.__str__())
 
     if os.path.exists(path):
