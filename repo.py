@@ -22,7 +22,8 @@ def getCommitCount(repo):
 
 
 def deleteRepo(path):
-    shutil.rmtree(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 
 def cloneRepo(gitURL, dest):
@@ -74,23 +75,30 @@ def processRepo(info):
     path = './current_repo/' + info.name
 
     try:
+        print 'cloning...'
         repo = cloneRepo(info.git_url, path)
+        print 'counting commits...'
         stats['commits'] = getCommitCount(repo)
+        print 'getting license...'
         stats['license'] = getLicense(path)
         stats['license_type'] = None
         if not stats['license'] == None:
+            print 'getting license type...'
             stats['license_type'] = license.getLicenseType(stats['license'])
+        print 'inserting to db...'
         db.insertRecord(stats)
+        return True
+    except KeyboardInterrupt:
+        print 'repo interrupt'
+        sys.exit()
     except Exception as inst:
         print 'Caught error: \n%s' % inst
-        if inst.__str__() == '[Errno 24] Too many open files':
-            print inst
-            sys.exit()
+        if inst.__str__() == '[Errno 24] Too many open files' or inst.__str__() == 'filedescriptor out of range in select()':
+            raise
         db.insertError(stats['url'], inst.__str__())
-
-    if os.path.exists(path):
+        return False
+    finally:
+        print 'deleting'
         deleteRepo(path)
-
-    return True
   
     #print getLicense(info._attrs['clone_url'])
