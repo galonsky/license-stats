@@ -30,7 +30,6 @@ def cloneRepo(gitURL, dest):
 
 
 def getLicense(path):
-    license = ''
     prog = re.compile(LICENSE_PATTERN, re.IGNORECASE)
     for filename in os.listdir(path):
         if not os.path.isdir(path + '/' + filename):
@@ -38,8 +37,7 @@ def getLicense(path):
             if match:
                 with open(path + '/' + filename, 'r') as f:
                     f = open(path + '/' + filename, 'r')
-                    license = f.read()
-                    return license
+                    return f.read()
 
 
 def processRepoWithURL(url):
