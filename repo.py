@@ -36,10 +36,10 @@ def getLicense(path):
         if not os.path.isdir(path + '/' + filename):
             match = prog.match(filename)
             if match:
-                f = open(path + '/' + filename, 'r')
-                license = f.read()
-                f.close()
-                return license
+                with open(path + '/' + filename, 'r') as f:
+                    f = open(path + '/' + filename, 'r')
+                    license = f.read()
+                    return license
 
 
 def processRepoWithURL(url):
