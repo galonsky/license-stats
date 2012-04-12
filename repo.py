@@ -77,7 +77,7 @@ def processRepo(info):
     path = './current_repo/' + info.name
 
     try:
-        repo = cloneRepo(info.clone_url, path)
+        repo = cloneRepo(info.git_url, path)
         stats['commits'] = getCommitCount(repo)
         stats['license'] = getLicense(path)
         stats['license_type'] = None
