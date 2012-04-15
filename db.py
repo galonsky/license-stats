@@ -19,9 +19,9 @@ cur = conn.cursor()
 def insertRecord(stats):
     query = """
     INSERT INTO repos 
-    (user, name, url, git_url, watchers, forks, created, updated, commits, language, license, license_type)
+    (user, name, url, git_url, watchers, forks, created, updated, commits, language, license, license_type, collaborators, issues)
     VALUES
-    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     cur.execute(query, (
         stats['user'],
@@ -35,8 +35,10 @@ def insertRecord(stats):
         str(stats['commits']),
         stats['language'],
         stats['license'],
-        stats['license_type'])
-    )
+        stats['license_type'],
+        str(stats['collaborators']),
+        str(stats['issues'])
+    ))
 
 
 def insertError(url, error):

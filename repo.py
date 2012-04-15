@@ -7,6 +7,8 @@ import shutil
 import re
 import license
 import sys
+import urllib2
+import json
 
 gh = Github()
 LICENSE_PATTERN = '.*(LICENSE|COPYING)(\.(txt|md))?'
@@ -28,6 +30,27 @@ def deleteRepo(path):
 
 def cloneRepo(gitURL, dest):
     return Repo.clone_from(gitURL, dest)
+
+
+def getCollaborators(user, repo):
+    collabs = gh.repos.collaborators.list(user, repo).all()
+    return len(collabs)
+
+
+def getClosedIssues(user, repo):
+    i = 1
+    total = 0
+    while True:
+        url = 'https://api.github.com/repos/%s/%s/issues?state=closed&per_page=100&page=%d' % (user, repo, i)
+
+        response = urllib2.urlopen(url).read()
+        obj = json.loads(response)
+        num = len(obj)
+        total = total + num
+        i = i + 1
+        if num != 100:
+            break
+    return total
 
 
 def getLicense(path):
@@ -85,6 +108,10 @@ def processRepo(info):
         if not stats['license'] == None:
             print 'getting license type...'
             stats['license_type'] = license.getLicenseType(stats['license'])
+        print 'getting collaborators...'
+        stats['collaborators'] = getCollaborators(user, info.name)
+        print 'getting issues...'
+        stats['issues'] = info.open_issues + getClosedIssues(user, info.name)
         print 'inserting to db...'
         db.insertRecord(stats)
         return True
