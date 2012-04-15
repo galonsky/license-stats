@@ -63,6 +63,8 @@ def updateIssuesAndCollaborators():
             collabs = repo.getCollaborators(row[1], row[2])
             db.updateNoIssue(row[0], issues, collabs)
             num = remaining - int(gh.remaining_requests)
+            if num < 0:
+                num = 3
             remaining = int(gh.remaining_requests)
             print 'issues: %s' % str(issues)
             print 'collabs: %s' % str(collabs)
