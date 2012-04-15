@@ -7,7 +7,7 @@ import shutil
 import re
 import license
 import sys
-import urllib2
+import urllib, urllib2
 import json
 
 gh = Github()
@@ -41,8 +41,8 @@ def getClosedIssues(user, repo):
     i = 1
     total = 0
     while True:
-        url = 'https://api.github.com/repos/%s/%s/issues?state=closed&per_page=100&page=%d' % (user, repo, i)
-
+        url = 'https://api.github.com/repos/%s/%s/issues?state=closed&per_page=100&page=%d' % (urllib.quote(user), urllib.quote(repo), i)
+        print url
         response = urllib2.urlopen(url).read()
         obj = json.loads(response)
         num = len(obj)
@@ -79,7 +79,7 @@ def processRepo(info):
 
     print 'Processing repo: %s' % info.name
     print 'remaining requests: %s' % gh.remaining_requests
-    #pprint(vars(info))
+    pprint(vars(info))
     
     parts = info.html_url.split('/')
     user = parts[-2]
@@ -110,8 +110,10 @@ def processRepo(info):
             stats['license_type'] = license.getLicenseType(stats['license'])
         print 'getting collaborators...'
         stats['collaborators'] = getCollaborators(user, info.name)
-        print 'getting issues...'
-        stats['issues'] = info.open_issues + getClosedIssues(user, info.name)
+        stats['issues'] = 0
+        if info.has_issues:
+            print 'getting issues...'
+            stats['issues'] = info.open_issues + getClosedIssues(user, info.name)
         print 'inserting to db...'
         db.insertRecord(stats)
         return True
