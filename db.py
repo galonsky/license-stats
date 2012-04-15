@@ -55,3 +55,14 @@ def getLicenses():
 def updateType(id, licenseType):
     query = 'UPDATE repos SET license_type = %s WHERE id = %s'
     cur.execute(query, (licenseType, str(id)))
+
+
+def getNoIssues():
+    query = 'SELECT id, user, name FROM repos WHERE collaborators IS NULL AND issues IS NULL AND error IS NULL;'
+    cur.execute(query)
+    return cur.fetchall()
+
+
+def updateNoIssue(id, issues, collabs):
+    query = 'UPDATE repos SET issues = %s, collaborators = %s WHERE id = %s;'
+    cur.execute(query, (issues, collabs, id))

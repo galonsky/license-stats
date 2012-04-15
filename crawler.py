@@ -1,6 +1,9 @@
 import redis_client
 import repo
 from pygithub3 import Github
+from datetime import datetime
+import time
+import db
 
 gh = Github()
 
@@ -32,3 +35,32 @@ def crawlRepos():
             if not redis_client.repoProcessed(watched.name):
                 if repo.processRepo(watched):
                     redis_client.addRepo(watched.name)
+
+
+def updateIssuesAndCollaborators():
+    gh = Github()
+    gh.users.get('galonsky')
+    remaining = int(gh.remaining_requests)
+    print remaining
+    rows = db.getNoIssues()
+    lastTime = datetime.now()
+    num = 1
+    for row in rows:
+        since = (datetime.now() - lastTime).seconds
+        interval = num * (3.6 / 5.0)
+        if since < interval:
+            wait = interval - since + 0.1
+            print 'waiting %f' % wait
+            time.sleep(wait)
+        lastTime = datetime.now()
+        print '%s/%s' % (row[1], row[2])
+        info = gh.repos.get(row[1], row[2])
+        issues = 0
+        if info.has_issues:
+            issues = repo.getClosedIssues(row[1], row[2]) + info.open_issues
+        collabs = repo.getCollaborators(row[1], row[2])
+        db.updateNoIssue(row[0], issues, collabs)
+        num = remaining - int(gh.remaining_requests)
+        remaining = int(gh.remaining_requests)
+        print 'issues: %s' % str(issues)
+        print 'collabs: %s' % str(collabs)
