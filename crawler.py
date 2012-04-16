@@ -52,6 +52,8 @@ def updateIssuesAndCollaborators():
             interval = num * (3.6 / 5.0)
             if since < interval:
                 wait = interval - since + 0.1
+                if wait > 60:
+                    wait = 60
                 print 'waiting %f' % wait
                 time.sleep(wait)
             lastTime = datetime.now()
