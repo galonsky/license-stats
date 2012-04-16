@@ -41,33 +41,31 @@ def crawlRepos():
 def updateIssuesAndCollaborators():
     gh = Github()
     gh.users.get('galonsky')
-    remaining = int(gh.remaining_requests)
-    print remaining
+
     rows = db.getNoIssues()
     lastTime = datetime.now()
-    num = 1
+    num = 0
     for row in rows:
         try:
             since = (datetime.now() - lastTime).seconds
             interval = num * (3.6 / 5.0)
             if since < interval:
                 wait = interval - since + 0.1
-                if wait > 60:
-                    wait = 60
                 print 'waiting %f' % wait
                 time.sleep(wait)
             lastTime = datetime.now()
             print '%s/%s' % (row[1], row[2])
             info = gh.repos.get(row[1], row[2])
+            num = 1
             issues = 0
             if info.has_issues:
-                issues = repo.getClosedIssues(row[1], row[2]) + info.open_issues
+                closed_issues = repo.getClosedIssues(row[1], row[2])
+                issues = issues + closed_issues
+                num = num + (closed_issues / 100) + 1
             collabs = repo.getCollaborators(row[1], row[2])
+            num = num + (collabs / 100) + 1
             db.updateNoIssue(row[0], issues, collabs)
-            num = remaining - int(gh.remaining_requests)
-            if num < 0:
-                num = 3
-            remaining = int(gh.remaining_requests)
+
             print 'issues: %s' % str(issues)
             print 'collabs: %s' % str(collabs)
         except NotFound:
