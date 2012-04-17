@@ -9,6 +9,7 @@ import license
 import sys
 import urllib, urllib2
 import json
+from urllib2 import HTTPError
 
 gh = Github()
 LICENSE_PATTERN = '.*(LICENSE|COPYING)(\.(txt|md))?'
@@ -79,7 +80,7 @@ def processRepo(info):
 
     print 'Processing repo: %s' % info.name
     print 'remaining requests: %s' % gh.remaining_requests
-    pprint(vars(info))
+    #pprint(vars(info))
     
     parts = info.html_url.split('/')
     user = parts[-2]
@@ -117,6 +118,9 @@ def processRepo(info):
         print 'inserting to db...'
         db.insertRecord(stats)
         return True
+    except HTTPError as http:
+        if http.code == 403:
+            raise
     except KeyboardInterrupt:
         print 'repo interrupt'
         sys.exit()
