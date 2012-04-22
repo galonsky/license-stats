@@ -38,11 +38,8 @@ def crawlRepos():
                     redis_client.addRepo(watched.name)
 
 
-def updateIssuesAndCollaborators():
-    gh = Github()
-    gh.users.get('galonsky')
-
-    rows = db.getNoIssues()
+def updateNoCollaborators():
+    rows = db.getNoCollaborators()
     lastTime = datetime.now()
     num = 0
     for row in rows:
@@ -55,18 +52,11 @@ def updateIssuesAndCollaborators():
                 time.sleep(wait)
             lastTime = datetime.now()
             print '%s/%s' % (row[1], row[2])
-            info = gh.repos.get(row[1], row[2])
-            num = 1
-            issues = 0
-            if info.has_issues:
-                closed_issues = repo.getClosedIssues(row[1], row[2])
-                issues = issues + closed_issues
-                num = num + (closed_issues / 100) + 1
-            collabs = repo.getCollaborators(row[1], row[2])
-            num = num + (collabs / 100) + 1
-            db.updateNoIssue(row[0], issues, collabs)
 
-            print 'issues: %s' % str(issues)
+            collabs = repo.getOrgMembers(row[1])
+            num = (collabs / 100) + 1
+            db.updateNoCollab(row[0], collabs)
+
             print 'collabs: %s' % str(collabs)
         except NotFound:
             continue

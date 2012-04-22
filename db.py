@@ -63,6 +63,17 @@ def getNoIssues():
     return cur.fetchall()
 
 
+def getNoCollaborators():
+    query = 'SELECT id, user, name FROM repos WHERE collaborators = 0 AND error IS NULL;'
+    cur.execute(query)
+    return cur.fetchall()
+
+
 def updateNoIssue(id, issues, collabs):
     query = 'UPDATE repos SET issues = %s, collaborators = %s WHERE id = %s;'
     cur.execute(query, (issues, collabs, id))
+
+
+def updateNoCollab(id, collabs):
+    query = 'UPDATE repos SET collaborators = %s WHERE id = %s;'
+    cur.execute(query, (collabs, id))

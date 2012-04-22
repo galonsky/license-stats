@@ -38,6 +38,22 @@ def getCollaborators(user, repo):
     return len(collabs)
 
 
+def getOrgMembers(org):
+    i = 1
+    total = 0
+    while True:
+        url = 'https://api.github.com/orgs/%s/members?per_page=100&page=%d' % (urllib.quote(org), i)
+        print url
+        response = urllib2.urlopen(url).read()
+        obj = json.loads(response)
+        num = len(obj)
+        total = total + num
+        i = i + 1
+        if num != 100:
+            break
+    return total
+
+
 def getClosedIssues(user, repo):
     i = 1
     total = 0
