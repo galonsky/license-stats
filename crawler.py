@@ -52,9 +52,12 @@ def updateNoCollaborators():
                 time.sleep(wait)
             lastTime = datetime.now()
             print '%s/%s' % (row[1], row[2])
+            info = gh.repos.get(row[1], row[2])
+            num = 1
+            org = info.organization.login
 
-            collabs = repo.getOrgMembers(row[1])
-            num = (collabs / 100) + 1
+            collabs = repo.getOrgMembers(org)
+            num = num + (collabs / 100) + 1
             db.updateNoCollab(row[0], collabs)
 
             print 'collabs: %s' % str(collabs)

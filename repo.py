@@ -126,7 +126,11 @@ def processRepo(info):
             print 'getting license type...'
             stats['license_type'] = license.getLicenseType(stats['license'])
         print 'getting collaborators...'
-        stats['collaborators'] = getCollaborators(user, info.name)
+        collabs = getCollaborators(user, info.name)
+        if collabs == 0:
+            org = info.organization.login
+            collabs = getOrgMembers(org)
+        stats['collaborators'] = collabs
         stats['issues'] = 0
         if info.has_issues:
             print 'getting issues...'
