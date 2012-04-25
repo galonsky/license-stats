@@ -128,7 +128,7 @@ def processRepo(info):
         print 'getting collaborators...'
         collabs = getCollaborators(user, info.name)
         if collabs == 0:
-            org = info.organization.login
+            org = info.owner.login
             collabs = getOrgMembers(org)
         stats['collaborators'] = collabs
         stats['issues'] = 0
