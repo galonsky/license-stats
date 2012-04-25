@@ -32,10 +32,15 @@ def crawlRepos():
         seedUser = redis_client.getUser()
         redis_client.addProcessedUser(seedUser)
         print 'Seed user: %s' % seedUser
-        for watched in gh.repos.watchers.list_repos(seedUser).iterator():
-            if not redis_client.repoProcessed(watched.name):
-                if repo.processRepo(watched):
-                    redis_client.addRepo(watched.name)
+        try:
+            for watched in gh.repos.watchers.list_repos(seedUser).iterator():
+                if not redis_client.repoProcessed(watched.name):
+                    if repo.processRepo(watched):
+                        redis_client.addRepo(watched.name)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            continue
 
 
 def updateNoCollaborators():
