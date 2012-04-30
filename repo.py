@@ -96,7 +96,6 @@ def processRepo(info):
 
     print 'Processing repo: %s' % info.name
     print 'remaining requests: %s' % gh.remaining_requests
-    #pprint(vars(info))
     
     parts = info.html_url.split('/')
     user = parts[-2]
@@ -153,5 +152,3 @@ def processRepo(info):
     finally:
         print 'deleting'
         deleteRepo(path)
-  
-    #print getLicense(info._attrs['clone_url'])

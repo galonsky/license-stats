@@ -42,7 +42,7 @@ def crawlRepos():
         except:
             continue
 
-
+# legacy code for backfilling
 def updateNoCollaborators():
     rows = db.getNoCollaborators()
     lastTime = datetime.now()
